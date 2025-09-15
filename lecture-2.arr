@@ -20,3 +20,5 @@ overlay( text( "STOP", 40, "white"),
 
 overlay( text( "Manny", 40, "Red"), 
   rectangle(300, 100, "solid", "white"))
+
+
