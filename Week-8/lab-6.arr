@@ -29,6 +29,7 @@ scores =
 scores
 
 fun scores-count(l :: List) -> Number:
+  doc: "this will count how many are greater than 90"
   cases (List) l:
     | empty => 0
     | link(f, r) => (if f > 90: 1 else: 0 end) + scores-count(r)
@@ -47,6 +48,7 @@ all-emails
 
 
 fun get-domain1(email :: String) -> String:
+  doc: "this will split up the email and find the domain only"
   first-part = string-split(email, "@")
   better = first-part.get(1)
   better1 = string-split(better, ".")
@@ -58,6 +60,7 @@ uni-domain = distinct(domains)
 uni-domain
 
 fun replace-domain(email :: String) -> String:
+  doc: "this will replace the ugly email with the better one"
   first-part = string-split(email, "@")
   username = first-part.get(0)
   domain = first-part.get(1)
