@@ -96,4 +96,12 @@ fun is-gentoo(r :: Row) -> Boolean:
   else:
     false 
   end
+where:
+  is-gentoo(penguins.row-n(0)) is false
+  is-gentoo(penguins.row-n(152)) is true
 end
+
+gentoo-only =filter-with(penguins, is-gentoo)
+
+filter-with(gentoo-only, lam(r): if r["sex"] == "male": true else: false end end)
+
