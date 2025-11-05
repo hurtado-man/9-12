@@ -91,17 +91,40 @@ find-avg(all_bill_lengths)
 #Question 2 - Gentoo male penguins are needed for an experiment to check their mass, but the researchers need it in Kilograms instead of grams, filter the table to only have the male gentoo penguins and use list transformation to make a list of the body mass in kilograms, then create a new column for this new information in the filtered table
 
 fun is-gentoo(r :: Row) -> Boolean:
-  if r["species"] == "Gentoo":
+  doc: "this will create a function that will allow for the filtering of penguins to only be gentoo ones and it does this by having an if statement that will check the row element of species and make sure it is gentoo, if so, then it will allow it to be added to the table."
+  if r["species"] == "Gentoo":#checking if the row is a gentoo
     true
   else:
     false 
   end
-where:
+where:#These show concrete proof that the function I made is correct and is working with putting in specific rows from the penguin table
   is-gentoo(penguins.row-n(0)) is false
   is-gentoo(penguins.row-n(152)) is true
 end
 
-gentoo-only =filter-with(penguins, is-gentoo)
+gentoo-only =filter-with(penguins, is-gentoo) #This will filter the table for the first step that gets rid of all of the penguins that arent gentoo, then setting it up to a variable so we can further edit this table to then get rid of the females, this is done in the next step.  
 
-filter-with(gentoo-only, lam(r): if r["sex"] == "male": true else: false end end)
+question2-table = filter-with(gentoo-only, lam(r): if r["sex"] == "male": true else: false end end) #this function takes the gentoo only table and further filters it so it gets rid of all of the females. This is done by using an unnamed lamda function that has an if statement inside of it that checks if the row for sex is male, if not then it is filtered out of the table therefore giving us the new table. setting this equal to the var question2-table allows for the use of the table to be easily aquired just by typing in the variable
 
+penguin-mass = question2-table.get-column("body_mass_g") #this function extracts the entire mass column of the new table made and turns it into a list, and I set it equal to the varaible so we can use this list for the function that will be created.
+
+fun fix-mass(l :: List) -> List:
+  doc: "This function will take all of the items in the list and edit them so that all of their masses are divided by 1000 to make the correct unit kilograms"
+  cases (List) l: #this will take each item from the list and seperate it from first and rest and allow each item to be divided by 100
+    | empty => empty
+    | link(f, r) => link(f / 100, fix-mass(r))
+  end
+where: #this where block shows concrete proof that the code that I wrote is successful 
+  fix-mass([list: 100, 200, 300, 400]) is [list: 1, 2, 3, 4]
+  fix-mass([list: 100, 200, 300]) is [list: 1, 2, 3]
+  fix-mass([list: 100, 200]) is [list: 1, 2]
+  fix-mass([list: 100]) is [list: 1]
+  fix-mass([list: ]) is [list: ]
+end
+
+fix-mass(penguin-mass) #this function satisfies the question, transforming the list into kilograms by dividing all of the items by 100. Now the researchers can use this data created by my code for their experiments. 
+
+build-column(question2-table, "body_mass_kg", lam(r): r["body_mass_g"] / 100 end)
+#this function above adds to the question-2 table and adds a column that has the body mass in kg rather than g.
+
+#List selection 
