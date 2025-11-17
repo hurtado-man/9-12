@@ -127,4 +127,81 @@ fix-mass(penguin-mass) #this function satisfies the question, transforming the l
 build-column(question2-table, "body_mass_kg", lam(r): r["body_mass_g"] / 100 end)
 #this function above adds to the question-2 table and adds a column that has the body mass in kg rather than g.
 
-#List selection 
+#List selection - setting up a function that takes a list and returns a list with only specific elements that are desired 
+
+#Question 3 - Researchers are now interested in chinstrap penguins female penguins and want to know how many of those penguins have a foot length over 200mm. Use list selection to find how many of those penguins are there and then filter the table afterwards using a table filter to show the new table.
+
+only_chinstrap = filter-with(penguins, lam(r): if r["species"] == "Chinstrap": true else: false end end) #This built in function uses an unnamed function to filter the table so that only the chinstrap species penguins will show up. this is set to the variable only_chinstrap so we can again use this table for the next filter. 
+
+question-3-table = filter-with(only_chinstrap, lam(r): if r["sex"] == "female": true else: false end end)#This built in function uses an innamed function to filter the table so that only the female chinstrap species penguin will show up. this is set to the variable question-3-table so we can reference this table to extract a list. 
+
+penguin_list = question-3-table.get-column("flipper_length_mm")
+#This is the list of the extracted flipper lengths (mm) from the penguins that are desired from the question
+
+fun large_foot(l :: List) -> List:
+  doc: "This function will select the elements in the list that are greater than or equal to 200 mm which uses list selection"
+  cases (List) l: #This will filter the elements and when it gets to empty then the result will be an empty list
+    | empty => empty
+    | link(f, r) =>#we have to split this up further becasue we have to check if f is over 200 first before we deal with r
+      ask:
+        | f >= 200 then: link(f, large_foot(r))
+        | otherwise: large_foot(r)
+      end
+  end
+where: #all of these show concrete proof that i am testing all of my functions and that this function is working
+  large_foot([list: 100, 200, 300, 400]) is [list: 200, 300, 400]
+  large_foot([list: 100, 200, 300]) is [list: 200, 300]
+  large_foot([list: 100, 200]) is [list: 200]
+  large_foot([list: 100]) is [list: ]
+  large_foot([list: ]) is [list: ]
+end
+
+
+large_foot(penguin_list)#this is the result of the function that I have created and the answer is 200 and 202 for only two of the penguins which means that only 2 penguins have foot lengths that are equal to or above 200 mm. 
+
+filter-with(question-3-table, lam(r): if r["flipper_length_mm"] >= 200: true else: false end end)#this is the last part of the question that filters the question 3 table of only chinstrap female penguins further to only include the ones whos flipper lengths are equal to or larger than 200. 
+
+#accumulation - creating a function that takes in a list and does something to the list but only by going through each element while using memory
+
+#question 4 - Researches now want to work with only the data from penguins from 0 <= x <= 300, as the data after penguin #300 are skewed heavily. Filter these penguins out. Then after that the researches want to know the largest even bill depth. 
+
+
+threehun-penguins = filter-with(penguins, lam(r): if r["name"] > 300: false else: true end end)
+#This is me filtering out the penguions after 300 which is what the question asked. I did this by using an unamed lambda function inside the filter with function that gets rid of all of the penguins after name 300.
+
+fun float-to-int(n :: Number) -> Number:
+  num-round(n)
+end
+
+threehun-penguins3 = transform-column(threehun-penguins, "bill_depth_mm", float-to-int)
+  
+
+penguin_list4 = threehun-penguins3.get-column("bill_depth_mm") #this will extract the column bill depth mm from the correct table since we had to filter out all of the penguins over 300. I did this by using the get column function that will allow for the extraction of the column as a list.
+
+
+
+
+fun my-even-acc(lis :: List):
+  doc: "this function is an accumulator and this part of the function is the main one that calls another function that will compare the last element to the current one being read"
+  m-even(0, lis)#this is the accumulator function
+where:#these are all of my examples that show concrete proof that the function I created is working for not only the list extracted but for handmade lists too that I created.
+  my-even-acc([list: 1, 2, 3, 4, 5]) is 4
+  my-even-acc([list: 4, 5, 6, 7, 8]) is 8
+  my-even-acc([list: 121, 3535, 354, 32435]) is 354
+end
+
+fun m-even(acc, lis):
+  doc: "this is the second part of the function which is the most important part because it is going to compare the new value to the last value so that if it is larger and even, that will be the number assigned to acc."
+  cases (List) lis:
+    | empty => acc #if the list is empty than the highest things will also be the acc
+    | link(f, r) => if num-modulo(f, 2) == 0:
+        num-max(f, my-even-acc(r))#this is checking if the nunber is even and higher than the last element
+      else: my-even-acc(r)
+      end
+end
+end
+
+my-even-acc(penguin_list4)
+
+
+
