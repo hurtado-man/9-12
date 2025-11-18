@@ -196,12 +196,13 @@ fun m-even(acc, lis):
     | empty => acc #if the list is empty than the highest things will also be the acc
     | link(f, r) => if num-modulo(f, 2) == 0:
         num-max(f, my-even-acc(r))#this is checking if the nunber is even and higher than the last element
-      else: my-even-acc(r)
+      else: my-even-acc(r)#if it isnt higher than the last element then it will skip it and move onto the next one 
       end
 end
 end
 
 my-even-acc(penguin_list4)
+#22 is what we get from this function which applies the actual list of data to the function and finds the highest even number. I did this by setting the list to a variable and then calling it as an imput in the new function.
 
 
 
